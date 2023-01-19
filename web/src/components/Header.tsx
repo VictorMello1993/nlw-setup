@@ -1,6 +1,4 @@
 import { Plus } from "phosphor-react";
-
-
 import logoImage from '../assets/logo.svg'
 
 export function Header() {
