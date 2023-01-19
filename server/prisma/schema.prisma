@@ -38,7 +38,7 @@ model HabitWeekDays {
 model Day {
   id        String     @id @default(uuid())
   date      DateTime
-  dayHabits DayHabit[] //1 dia possui vários hábitos
+  dayHabits DayHabit[] //1 dia possui nenhum ou vários hábitos - 1-N
 
   @@unique([date])
   @@map("days")
