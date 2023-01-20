@@ -5,12 +5,13 @@ import { ProgressBar } from './ProgressBar';
 import { Check } from 'phosphor-react';
 
 interface HabitDayProps {
-  availableHabits: number,
-  completedHabits: number
+  date?: Date,
+  availableHabits?: number,
+  completedHabits?: number
 }
 
-export function HabitDay({ availableHabits, completedHabits }: HabitDayProps) {
-  const completedPercentage = Math.round((completedHabits / availableHabits) * 100)
+export function HabitDay({ availableHabits = 0, completedHabits = 0 }: HabitDayProps) {
+  const completedPercentage = availableHabits > 0 ? Math.round((completedHabits / availableHabits) * 100) : 0
   return (
     <Popover.Root>
       <Popover.Trigger

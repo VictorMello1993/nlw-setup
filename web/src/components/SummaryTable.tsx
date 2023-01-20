@@ -1,3 +1,6 @@
+import dayjs from "dayjs"
+import { useEffect, useState } from "react"
+import { api } from "../libs/axios"
 import { generateDatesFromYearBeginning } from "../utils/generate-dates-from-year-beginning"
 import { HabitDay } from "./HabitDay"
 
@@ -11,7 +14,23 @@ const minimumSummaryDatesSize = 18 * 7
 //126 dias - nº de dias contados a partir do primeiro dia do ano
 const amountOfDaysToFill = minimumSummaryDatesSize - summaryDates.length
 
+type Summary = Array<{
+  id: string
+  date: string
+  availableHabits: number
+  completedHabits: number
+}>
+
 export function SummaryTable() {
+  const [summary, setSummary] = useState<Summary>([])
+
+  useEffect(() => {
+    api.get('summary').then(response => {
+      // console.log('summary', response.data)
+      setSummary(response.data)
+    })
+  }, [])
+
   return (
     <div className="w-full flex">
       <div className="grid grid-rows-7 grid-flow-row gap-3">
@@ -28,12 +47,29 @@ export function SummaryTable() {
       </div>
 
       <div className="grid grid-rows-7 grid-flow-col gap-3">
-        {summaryDates.map((date, index) => {
+        {summaryDates.map((date) => {
+          const dayInSummary = summary.find(day => {
+
+            // const dayHabit = dayjs(day.date, 'day').toDate()
+            // console.log('dayHabit', dayHabit)
+            // return dayjs(date).toDate() === dayHabit
+
+            return dayjs(date).isSame(day.date, 'day')
+          })
+
+          // console.log('dayInSummary', dayInSummary)
+          // const dateTest = new Date(2022, 12, 20)
+          // console.log('dateTest', dayjs(dateTest))
+
+          // console.log('summaryDates', summaryDates)
+          // console.log('dayjs(date)toDate()', dayjs(date).toDate())
+          // console.log('dayInSummary', dayInSummary)
           return (
             <HabitDay
-              key={`${date.toString()} - ${index}`}
-              availableHabits={5}
-              completedHabits={Math.round(Math.random() * 5)}
+              key={date.toString()}
+              date={date}
+              availableHabits={dayInSummary?.availableHabits}
+              completedHabits={dayInSummary?.completedHabits}
             />
           )
         })}
