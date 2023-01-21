@@ -21,13 +21,32 @@ type Summary = Array<{
   completedHabits: number
 }>
 
+type SummaryResponse = {
+  id: string,
+  date: string,
+  available_habits: number
+  completed_habits: number
+}
+
 export function SummaryTable() {
   const [summary, setSummary] = useState<Summary>([])
 
   useEffect(() => {
     api.get('summary').then(response => {
-      // console.log('summary', response.data)
-      setSummary(response.data)
+      const result = response.data as Array<SummaryResponse>
+
+      const summaryTransformed = result.map(({
+        id,
+        date,
+        available_habits: availableHabits,
+        completed_habits: completedHabits }) => ({
+          id,
+          date,
+          availableHabits,
+          completedHabits
+        })) as Summary;
+
+      setSummary(summaryTransformed)
     })
   }, [])
 
@@ -47,23 +66,11 @@ export function SummaryTable() {
       </div>
 
       <div className="grid grid-rows-7 grid-flow-col gap-3">
-        {summaryDates.map((date) => {
+        {summaryDates.map(date => {
           const dayInSummary = summary.find(day => {
-
-            // const dayHabit = dayjs(day.date, 'day').toDate()
-            // console.log('dayHabit', dayHabit)
-            // return dayjs(date).toDate() === dayHabit
-
-            return dayjs(date).isSame(day.date, 'day')
+            return dayjs(date).isSame(day.date, 'day');
           })
 
-          // console.log('dayInSummary', dayInSummary)
-          // const dateTest = new Date(2022, 12, 20)
-          // console.log('dateTest', dayjs(dateTest))
-
-          // console.log('summaryDates', summaryDates)
-          // console.log('dayjs(date)toDate()', dayjs(date).toDate())
-          // console.log('dayInSummary', dayInSummary)
           return (
             <HabitDay
               key={date.toString()}
@@ -71,7 +78,7 @@ export function SummaryTable() {
               availableHabits={dayInSummary?.availableHabits}
               completedHabits={dayInSummary?.completedHabits}
             />
-          )
+          );
         })}
         {amountOfDaysToFill > 0 && Array.from({ length: amountOfDaysToFill }).map((_, index) => {
           return (
