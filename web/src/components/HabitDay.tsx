@@ -14,7 +14,11 @@ interface HabitDayProps {
 export function HabitDay({ availableHabits = 0, defaultHabitsCompleted = 0, date }: HabitDayProps) {
   const [completedHabits, setCompleted] = useState(defaultHabitsCompleted)
 
+  console.log(completedHabits, defaultHabitsCompleted, availableHabits)
+
   const completedPercentage = availableHabits > 0 ? Math.round((completedHabits / availableHabits) * 100) : 0
+
+  console.log('completedPercentage', completedPercentage)
 
   const dayAndMonth = dayjs(date).format('DD/MM')
   const dayOfWeek = dayjs(date).format('dddd')

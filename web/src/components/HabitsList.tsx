@@ -3,10 +3,11 @@ import dayjs from "dayjs";
 import { Check } from "phosphor-react";
 import { useEffect, useState } from "react";
 import { api } from "../libs/axios";
+import { calculateCompletedPercentage } from "../utils/calculate-completed-percentage";
 
 interface HabitsListProps {
   date: Date,
-  onCompletedChanged: (habitsCompleted: number) => void
+  onCompletedChanged: (habitsCompleted: number) => void,
 }
 
 interface HabitsInfo {
@@ -61,6 +62,8 @@ export function HabitsList({ date, onCompletedChanged }: HabitsListProps) {
       }
     }).then(response => {
       const result = response.data as DayResponse
+
+      onCompletedChanged(result.completedHabits.length);
       setHabitsInfo(result as HabitsInfo)
     })
   }, [])
