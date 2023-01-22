@@ -3,7 +3,6 @@ import dayjs from "dayjs";
 import { Check } from "phosphor-react";
 import { useEffect, useState } from "react";
 import { api } from "../libs/axios";
-import { calculateCompletedPercentage } from "../utils/calculate-completed-percentage";
 
 interface HabitsListProps {
   date: Date,

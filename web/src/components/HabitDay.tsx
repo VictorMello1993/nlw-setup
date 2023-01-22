@@ -1,4 +1,5 @@
 import * as Popover from '@radix-ui/react-popover';
+import * as ScrollArea from '@radix-ui/react-scroll-area';
 import clsx from 'clsx';
 import { ProgressBar } from './ProgressBar';
 import dayjs from 'dayjs';
@@ -46,7 +47,7 @@ export function HabitDay({ availableHabits = 0, defaultHabitsCompleted = 0, date
           <HabitsList date={date} onCompletedChanged={handleHabitsCompletedChanged} />
           <Popover.Arrow height={8} width={16} className="fill-zinc-900" />
         </Popover.Content>
-      </Popover.Portal>
-    </Popover.Root>
+      </Popover.Portal >
+    </Popover.Root >
   )
 }
