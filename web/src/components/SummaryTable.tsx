@@ -46,8 +46,6 @@ export function SummaryTable() {
           completedHabits
         })) as Summary;
 
-      console.log('summaryTransformed', summaryTransformed)
-
       setSummary(summaryTransformed)
     })
   }, [])
