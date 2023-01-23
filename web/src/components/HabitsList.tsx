@@ -3,7 +3,6 @@ import dayjs from "dayjs";
 import { Check } from "phosphor-react";
 import { useEffect, useState } from "react";
 import { api } from "../libs/axios";
-import * as ScrollArea from '@radix-ui/react-scroll-area';
 
 interface HabitsListProps {
   date: Date,
@@ -30,7 +29,7 @@ interface DayResponse {
   completedHabits: string[]
 }
 
-export function HabitsList({ date, onCompletedChanged }: HabitsListProps) {
+export function HabitsList({ date, onCompletedChanged, ...props }: HabitsListProps) {
   const [habitsInfo, setHabitsInfo] = useState<HabitsInfo>()
 
   async function handleToggleHabit(habitId: string) {
@@ -71,7 +70,7 @@ export function HabitsList({ date, onCompletedChanged }: HabitsListProps) {
   const isDateInPast = dayjs(date).endOf('day').isBefore(new Date())
 
   return (
-    <div className='mt-6 flex flex-col gap-3 max-h-72 overflow-y-auto'>
+    <div className='mt-6 flex flex-col gap-3 max-h-72' {...props}>
       {habitsInfo?.possibleHabits.map(habit => {
         return (
           <Checkbox.Root
