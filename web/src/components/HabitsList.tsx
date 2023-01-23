@@ -29,7 +29,7 @@ interface DayResponse {
   completedHabits: string[]
 }
 
-export function HabitsList({ date, onCompletedChanged, ...props }: HabitsListProps) {
+export function HabitsList({ date, onCompletedChanged }: HabitsListProps) {
   const [habitsInfo, setHabitsInfo] = useState<HabitsInfo>()
 
   async function handleToggleHabit(habitId: string) {
@@ -70,7 +70,7 @@ export function HabitsList({ date, onCompletedChanged, ...props }: HabitsListPro
   const isDateInPast = dayjs(date).endOf('day').isBefore(new Date())
 
   return (
-    <div className='mt-6 flex flex-col gap-3 max-h-72' {...props}>
+    <div className='mt-6 flex flex-col gap-3 max-h-20'>
       {habitsInfo?.possibleHabits.map(habit => {
         return (
           <Checkbox.Root
