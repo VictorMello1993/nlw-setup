@@ -4,7 +4,7 @@ import { ProgressBar } from './ProgressBar';
 import dayjs from 'dayjs';
 import { HabitsList } from './HabitsList';
 import { useState } from 'react';
-import { ScrollAreaCustomized } from './ScrollAreaCustomized';
+import { ScrollBarArea } from './ScrollBarArea';
 
 interface HabitDayProps {
   date: Date,
@@ -40,9 +40,9 @@ export function HabitDay({ availableHabits = 0, defaultHabitsCompleted = 0, date
           <span className='font-semibold text-zinc-400'>{dayOfWeek}</span>
           <span className='mt-1 font-extrabold leading-tight text-3xl'>{dayAndMonth}</span>
           <ProgressBar progress={completedPercentage} />
-          <ScrollAreaCustomized>
+          <ScrollBarArea>
             <HabitsList date={date} onCompletedChanged={handleHabitsCompletedChanged} />
-          </ScrollAreaCustomized>
+          </ScrollBarArea>
           <Popover.Arrow height={8} width={16} className="fill-zinc-900" />
         </Popover.Content>
       </Popover.Portal >
