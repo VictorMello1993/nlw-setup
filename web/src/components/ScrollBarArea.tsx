@@ -16,7 +16,6 @@ export function ScrollBarArea({ children }: ScrollAreaProps) {
       >
         <ScrollArea.Thumb className="before:content-[' '] relative flex-1 rounded-lg bg-zinc-400 before:absolute before:top-1/2 before:left-1/2 before:h-full before:min-h-11 before:w-full before:min-w-[22px] before:-translate-x-1/2 before:-translate-y-1/2 dark:bg-zinc-800" />
       </ScrollArea.Scrollbar>
-      <ScrollArea.Corner className="ScrollAreaCorner" />
     </ScrollArea.Root >
   )
 }

@@ -1,10 +1,8 @@
 import * as Popover from '@radix-ui/react-popover';
 import clsx from 'clsx';
-import { ProgressBar } from './ProgressBar';
-import dayjs from 'dayjs';
-import { HabitsList } from './HabitsList';
 import { useState } from 'react';
-import { ScrollBarArea } from './ScrollBarArea';
+import { calculateCompletedPercentage } from '../utils/calculate-completed-percentage';
+import { HabitDayModal } from './HabitDayModal';
 
 interface HabitDayProps {
   date: Date,
@@ -13,15 +11,12 @@ interface HabitDayProps {
 }
 
 export function HabitDay({ availableHabits = 0, defaultHabitsCompleted = 0, date }: HabitDayProps) {
-  const [completedHabits, setCompleted] = useState(defaultHabitsCompleted)
+  const defaultCompletedPercentage = calculateCompletedPercentage(availableHabits, defaultHabitsCompleted)
 
-  const completedPercentage = availableHabits > 0 ? Math.round((completedHabits / availableHabits) * 100) : 0
+  const [completedPercentage, setCompletedPercentage] = useState(defaultCompletedPercentage)
 
-  const dayAndMonth = dayjs(date).format('DD/MM')
-  const dayOfWeek = dayjs(date).format('dddd')
-
-  function handleHabitsCompletedChanged(completed: number) {
-    setCompleted(completed)
+  function handleCompletedPercentage(percentage: number) {
+    setCompletedPercentage(percentage)
   }
 
   return (
@@ -36,15 +31,9 @@ export function HabitDay({ availableHabits = 0, defaultHabitsCompleted = 0, date
           'bg-violet-500 border-violet-400': completedPercentage >= 80,
         })} />
       <Popover.Portal>
-        <Popover.Content className="min-w-[320px] p-6 rounded-2xl bg-zinc-900 flex flex-col" sideOffset={5}>
-          <span className='font-semibold text-zinc-400'>{dayOfWeek}</span>
-          <span className='mt-1 font-extrabold leading-tight text-3xl'>{dayAndMonth}</span>
-          <ProgressBar progress={completedPercentage} />
-          <ScrollBarArea>
-            <HabitsList date={date} onCompletedChanged={handleHabitsCompletedChanged} />
-          </ScrollBarArea>
-          <Popover.Arrow height={8} width={16} className="fill-zinc-900" />
-        </Popover.Content>
+        <>
+          <HabitDayModal date={date} completedPercentage={completedPercentage} handleCompletedPercentage={handleCompletedPercentage} />
+        </>
       </Popover.Portal >
     </Popover.Root >
   )

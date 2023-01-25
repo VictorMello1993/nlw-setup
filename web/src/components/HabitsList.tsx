@@ -1,37 +1,18 @@
 import * as Checkbox from "@radix-ui/react-checkbox";
 import dayjs from "dayjs";
 import { Check } from "phosphor-react";
-import { useEffect, useState } from "react";
 import { api } from "../libs/axios";
+import { calculateCompletedPercentage } from "../utils/calculate-completed-percentage";
+import { HabitsInfo } from "./HabitDayModal";
 
 interface HabitsListProps {
   date: Date,
-  onCompletedChanged: (habitsCompleted: number) => void,
+  onCompletedChanged: (habitsInfo: HabitsInfo, completedHabits: string[]) => void,
+  habitsInfo: HabitsInfo,
+  handleCompletedPercentage: (percentage: number) => void
 }
 
-interface HabitsInfo {
-  possibleHabits: Array<{
-    id: string
-    title: string
-    created_at: string
-  }>
-
-  completedHabits: string[]
-}
-
-interface DayResponse {
-  possibleHabits: Array<{
-    id: string
-    title: string
-    created_at: string
-  }>
-
-  completedHabits: string[]
-}
-
-export function HabitsList({ date, onCompletedChanged }: HabitsListProps) {
-  const [habitsInfo, setHabitsInfo] = useState<HabitsInfo>()
-
+export function HabitsList({ date, onCompletedChanged, handleCompletedPercentage, habitsInfo }: HabitsListProps) {
   async function handleToggleHabit(habitId: string) {
     await api.patch(`/habits/${habitId}/toggle`)
 
@@ -46,26 +27,11 @@ export function HabitsList({ date, onCompletedChanged }: HabitsListProps) {
       completedHabits = [...habitsInfo!.completedHabits, habitId]
     }
 
-    setHabitsInfo({
-      possibleHabits: habitsInfo!.possibleHabits,
-      completedHabits
-    })
+    const updatedCompletedPercentage = calculateCompletedPercentage(habitsInfo.possibleHabits.length, completedHabits.length)
 
-    onCompletedChanged(completedHabits.length);
+    handleCompletedPercentage(updatedCompletedPercentage);
+    onCompletedChanged(habitsInfo, completedHabits);
   }
-
-  useEffect(() => {
-    api.get('day', {
-      params: {
-        date: date.toISOString()
-      }
-    }).then(response => {
-      const result = response.data as DayResponse
-
-      onCompletedChanged(result.completedHabits.length);
-      setHabitsInfo(result as HabitsInfo)
-    })
-  }, [])
 
   const isDateInPast = dayjs(date).endOf('day').isBefore(new Date())
 
