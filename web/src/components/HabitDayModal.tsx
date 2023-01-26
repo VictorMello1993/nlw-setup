@@ -1,5 +1,6 @@
 import * as Popover from "@radix-ui/react-popover"
 import dayjs from "dayjs"
+import { X } from "phosphor-react"
 import { useEffect, useState } from "react"
 import { api } from "../libs/axios"
 import { calculateCompletedPercentage } from "../utils/calculate-completed-percentage"
@@ -55,9 +56,18 @@ export function HabitDayModal({ date, handleCompletedPercentage, completedPercen
     return <div></div>
   }
 
+  function stopFocusPropagationWhenPopoverIsOpen(event: any) {
+    event.stopPropagation();
+  }
+
   return (
-    <Popover.Content className="min-w-[320px] p-6 rounded-2xl bg-zinc-900 flex flex-col" sideOffset={5}>
-      <span className='font-semibold text-zinc-400'>{dayOfWeek}</span>
+    <Popover.Content className="min-w-[320px] p-6 rounded-2xl bg-zinc-900 flex flex-col" sideOffset={5} onOpenAutoFocus={(event) => event.preventDefault()}>
+      <div className="flex items-center justify-between">
+        <span className='font-semibold text-zinc-400'>{dayOfWeek}</span>
+        <Popover.Close className="text-zinc-400 rounded-lg hover:text-zinc-200 focus:outline-none focus:ring-2 focus:ring-violet-600 focus:ring-offset-2 focus:ring-offset-zinc-900">
+          <X size={24} aria-label="Fechar" />
+        </Popover.Close>
+      </div>
       <span className='mt-1 font-extrabold leading-tight text-3xl'>{dayAndMonth}</span>
       <ProgressBar progress={completedPercentage} />
       <ScrollBarArea>

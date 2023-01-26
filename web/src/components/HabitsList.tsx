@@ -42,7 +42,7 @@ export function HabitsList({ date, onCompletedChanged, handleCompletedPercentage
           <Checkbox.Root
             key={habit.id}
             onCheckedChange={() => handleToggleHabit(habit.id)}
-            className='flex items-center gap-3 group focus:outline-none disabled:cursor-not-allowed ml-4 mt-2'
+            className='flex items-center gap-3 group focus:outline-none disabled:cursor-not-allowed ml-4 mt-2 last:pb-2'
             checked={habitsInfo.completedHabits.includes(habit.id)}
             disabled={isDateInPast}>
             <div className='h-8 w-8 rounded-lg flex items-center justify-center bg-zinc-900 border 2 border-zinc-800 group-data-[state=checked]:bg-green-500 group-data-[state=checked]:border-green-500 transition-colors group-focus:ring-2 group-focus:ring-violet-700 group-focus:ring-offset-2 group-focus:ring-offset-background'>
