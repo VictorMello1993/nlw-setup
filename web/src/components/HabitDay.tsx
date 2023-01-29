@@ -12,7 +12,6 @@ interface HabitDayProps {
 
 export function HabitDay({ availableHabits = 0, defaultHabitsCompleted = 0, date }: HabitDayProps) {
   const defaultCompletedPercentage = calculateCompletedPercentage(availableHabits, defaultHabitsCompleted)
-
   const [completedPercentage, setCompletedPercentage] = useState(defaultCompletedPercentage)
 
   function handleCompletedPercentage(percentage: number) {
