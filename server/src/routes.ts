@@ -14,6 +14,8 @@ export async function appRoutes(app: FastifyInstance) {
 
     const { title, weekDays } = createHabitBody.parse(request.body)
 
+    console.log(title, weekDays)
+
     const today = dayjs().startOf('day').toDate()
 
     await prisma.habit.create({
@@ -63,7 +65,7 @@ export async function appRoutes(app: FastifyInstance) {
       }
     })
 
-    const completedHabits = day?.dayHabits.map(dayHabit => dayHabit.habit_id)
+    const completedHabits = day?.dayHabits.map(dayHabit => dayHabit.habit_id) ?? []
 
     return {
       possibleHabits,
@@ -127,25 +129,19 @@ export async function appRoutes(app: FastifyInstance) {
     // [{date: 17/01, available_habits: 5, completed_habits: 1}, {date: 18/01, available_habits: 2, completed_habits: 2}, {}]
 
     const summary = await prisma.$queryRaw`
-      SELECT 
-        d.id, 
-        d.date,
-        (
-          SELECT 
-            cast(count(*) as float)
-          FROM day_habits dh
-          where dh.day_id = d.id
-        ) as completed_habits,
-        (
-          SELECT
-            cast(count(*) as float)
-          FROM habit_week_days hwd
-          JOIN habits h
-            ON h.id = hwd.habit_id
-          WHERE hwd.week_day = cast(strftime('%w', d.date / 1000.0, 'unixepoch') as int)  
-            AND h.created_at <= d.date
-        ) as available_habits
-      FROM days d`
+      SELECT d.id,
+             d.date,
+            (
+              SELECT cast(count(*) as float) FROM day_habits dh
+              where dh.day_id = d.id
+            ) as completed_habits,
+            (
+              SELECT cast(count(*) as float)
+              FROM habit_week_days hwd
+                JOIN habits h ON h.id = hwd.habit_id
+                WHERE hwd.week_day = cast(extract(dow from d.date) as integer)
+                AND h.created_at <= d.date
+            ) as available_habits FROM days d`
 
     return summary
   })
