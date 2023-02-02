@@ -9,5 +9,6 @@ RUN npm install
 #Copiando outros arquivos
 COPY . .
 
+RUN npm run start
 EXPOSE 3333
 CMD ["npm", "run", "dev"]
