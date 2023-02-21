@@ -2,6 +2,15 @@
 
 ![image](https://user-images.githubusercontent.com/35710766/220465689-0a96f593-d422-47b1-bec4-5182d489e2c1.png)
 
+<p align="center">
+  <a href="#visão-geral">Visão geral</a> •
+  <a href="#tecnologias-e-ferramentas">Tecnologias e ferramentas</a> •
+  <a href="#início-rápido">Início rápido</a> •
+  <a href="#link-da-publicação">Link da aplicação</a> •  
+  <a href="#o-que-melhorar">O que melhorar</a>
+</p>
+
+## Visão geral
 Aplicativo que monitora e gerencia os hábitos que podem ou não ser cumpridos em seu dia-a-dia. O presente aplicativo foi desenvolvido durante o evento da NLW Setup, promovido pela <a href="https://www.rocketseat.com.br/">Rocketseat</a>.
 
 ## Tecnologias e ferramentas
