@@ -5,6 +5,7 @@ WORKDIR /usr/app
 #Instalando as dependências
 COPY package*.json ./
 RUN npm install
+RUN npx prisma generate
 
 #Copiando outros arquivos
 COPY . .

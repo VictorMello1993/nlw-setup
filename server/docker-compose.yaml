@@ -1,5 +1,5 @@
 services:
-  postgres:
+  nlw_setup_database:
     image: postgres
     container_name: nlw_setup_db
     restart: always
@@ -12,15 +12,16 @@ services:
   
   # app:
   #   build: .
-  #   container_name: nlw-setup_app
+  #   container_name: nlw_setup_app
   #   restart: always
   #   environment:
-  #     - DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}"
+  #     - DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@nlw_setup_database:5432/${POSTGRES_DB}"
+  #     - PORT=${PORT}
   #   ports:
   #     - 3333:3333
   #   volumes:
   #   - .:/usr/app
   #   links:
-  #   - postgres
+  #   - nlw_setup_database
   #   depends_on:
-  #   - postgres
+  #   - nlw_setup_database

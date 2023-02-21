@@ -7,6 +7,9 @@ const app = Fastify();
 app.register(cors);
 app.register(appRoutes);
 
+const port = process.env.PORT
+
 app.listen({
-  port: Number(process.env.PORT)
-}).then(() => console.log('Server is running...'));
+  port: Number(port) || 3333,
+  host: '0.0.0.0'
+}).then(() => console.log(`Server is running at ${port}...`));
