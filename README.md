@@ -72,6 +72,6 @@ O deploy do back-end foi realizado no Render, e tem a validade de 90 dias (free-
 * [x] Customizar a barra de rolagem na lista de hábitos, quando se tem muitos hábitos cadastrados naquele dia (dica: criar um componente que represente uma barra de rolagem e utilizar o Radix ScrollArea
 
 
-![br](https://user-images.githubusercontent.com/35710766/220492966-9ed5198a-d9a3-40e2-9d23-e977f4abf253.png) [Português](https://github.com/VictorMello1993/nlw-setup/edit/master/README.md)
+![br](https://user-images.githubusercontent.com/35710766/220492966-9ed5198a-d9a3-40e2-9d23-e977f4abf253.png) [Português](https://github.com/VictorMello1993/nlw-setup/blob/master/README.md)
 
 
