@@ -3,11 +3,11 @@
 ![image](https://user-images.githubusercontent.com/35710766/220465689-0a96f593-d422-47b1-bec4-5182d489e2c1.png)
 
 <p align="center">
-  <a href="#visão-geral">Overview</a> •
-  <a href="#tecnologias-e-ferramentas">Stack and tools</a> •
-  <a href="#início-rápido">Quick start</a> •
-  <a href="#link-da-publicação">Application link</a> •  
-  <a href="#o-que-melhorar">Improvements</a>
+  <a href="#overview">Overview</a> •
+  <a href="#stack-and-tools">Stack and tools</a> •
+  <a href="#quick-start">Quick start</a> •
+  <a href="#application-link">Application link</a> •  
+  <a href="#improvements">Improvements</a>
 </p>
 
 ## Overview
