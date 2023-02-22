@@ -62,8 +62,6 @@ https://nlw-setup-otbz5y1ll-victormello1993.vercel.app/
 
 O deploy do back-end foi realizado no Render, e tem a validade de 90 dias (free-tier)
 
-
-
 ## O que melhorar
 * [ ] Incluir a autenticação (Pode utilizar Firebase ou Auth0)
 * [ ] Notificações de push / service workers
@@ -74,4 +72,5 @@ O deploy do back-end foi realizado no Render, e tem a validade de 90 dias (free-
 
 ![br](https://user-images.githubusercontent.com/35710766/220492966-9ed5198a-d9a3-40e2-9d23-e977f4abf253.png) [Português](https://github.com/VictorMello1993/nlw-setup/blob/master/README.md)
 
+![us](https://user-images.githubusercontent.com/35710766/220503018-6f583dda-2ffc-4f62-afb2-ce0a982ef781.png) [Inglês](https://github.com/VictorMello1993/nlw-setup/blob/master/README-US.md)
 
