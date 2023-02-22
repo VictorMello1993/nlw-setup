@@ -70,7 +70,9 @@ Back-end deploy was done in Render and expires in 90 days (free-tier).
 * [x] Customize scroolbar feature on the habits list, when you have many data recorded in that day (tip: create a component that represents a scrollbar and use Radix ScrollArea)
 
 
-![br](https://user-images.githubusercontent.com/35710766/220492966-9ed5198a-d9a3-40e2-9d23-e977f4abf253.png) [Portuguese](https://github.com/VictorMello1993/nlw-setup/blob/master/README.md) ![us](https://user-images.githubusercontent.com/35710766/220503018-6f583dda-2ffc-4f62-afb2-ce0a982ef781.png) [English](https://github.com/VictorMello1993/nlw-setup/blob/master/README-US.md)
+![br](https://user-images.githubusercontent.com/35710766/220492966-9ed5198a-d9a3-40e2-9d23-e977f4abf253.png) [Portuguese](https://github.com/VictorMello1993/nlw-setup/blob/master/README.md) 
+
+![us](https://user-images.githubusercontent.com/35710766/220503018-6f583dda-2ffc-4f62-afb2-ce0a982ef781.png) [English](https://github.com/VictorMello1993/nlw-setup/blob/master/README-US.md)
 
 
 
