@@ -1,8 +1,8 @@
-import { Plus, X } from "phosphor-react";
+import { Plus, User, X } from "phosphor-react";
 import logoImage from '../assets/logo.svg';
 import * as Dialog from '@radix-ui/react-dialog';
 import { NewHabitForm } from "./NewHabitForm";
-
+import { Link, redirect } from "react-router-dom";
 
 export function Header() {
   return (
@@ -29,6 +29,12 @@ export function Header() {
           </Dialog.Content>
         </Dialog.Portal>
       </Dialog.Root>
-    </div>
+      <Link
+        className='border border-violet-500 font-semibold rounded-lg px-6 py-4 flex items-center gap-3 hover:border-violet-300 transition-colors focus:outline-none focus:ring-2 focus:ring-violet-700 focus:ring-offset-2 focus:ring-offset-background'
+        to="/signup">
+        <User size={20} className="text-violet-500" />
+        Criar conta
+      </Link>
+    </div >
   )
 }
