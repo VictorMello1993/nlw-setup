@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider      = "prisma-client-js"
   binaryTargets = ["native", "darwin", "debian-openssl-1.1.x"]
@@ -55,4 +52,12 @@ model DayHabit {
 
   @@unique([day_id, habit_id])
   @@map("day_habits")
+}
+
+model User {
+  id       String @id @default(uuid())
+  email    String @unique
+  password String
+
+  @@map("users")
 }

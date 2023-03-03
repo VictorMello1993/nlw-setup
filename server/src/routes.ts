@@ -2,6 +2,7 @@ import { FastifyInstance } from "fastify";
 import { prisma } from "./lib/prisma";
 import { z } from "zod"
 import dayjs from "dayjs";
+import { createHash } from 'node:crypto'
 
 export async function appRoutes(app: FastifyInstance) {
   app.post('/habits', async (request) => {
@@ -144,5 +145,23 @@ export async function appRoutes(app: FastifyInstance) {
             ) as available_habits FROM days d`
 
     return summary
+  })
+
+  app.post('/users', async (request) => {
+    const createUserBody = z.object({
+      email: z.string().email(),
+      password: z.string()
+    })
+
+    const { email, password } = createUserBody.parse(request.body);
+
+    const hashedPassword = createHash('sha256').update(password).digest('base64');
+
+    await prisma.user.create({
+      data: {
+        email,
+        password: hashedPassword
+      }
+    })
   })
 }
