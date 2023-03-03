@@ -1,24 +1,21 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
-export const texts = {
-  alreadyHasAccount: 'Já tem uma conta? Faça login',
-  NoAccount: 'Ainda não tem uma conta? Inscreva-se',
-  Signup: 'Criar conta',
-  Signin: 'Entrar'
-}
-
 interface ISignupFormProps {
-  children?: React.ReactNode
+  children?: React.ReactNode;
+  title: string;
+  buttonText: string;
+  footerText: string;
+  redirectUrl: string;
 }
 
-export function AuthForm({ children }: ISignupFormProps) {
+export function AuthForm({ children, title, buttonText, footerText, redirectUrl }: ISignupFormProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   return (
     <div className="absolute p-10 bg-zinc-900 rounded-2xl w-full max-w-md top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-      <span className="text-3l leading-tight font-semibold">Por favor, digite suas informações de cadastro</span>
+      <span className="text-3l leading-tight font-semibold">{title}</span>
       <form className="w-full flex-col mt-6">
         <div className="flex items-center">
           <label htmlFor="email" className="font-semibold leading-tight basis-1/5">E-mail</label>
@@ -40,6 +37,15 @@ export function AuthForm({ children }: ISignupFormProps) {
             onChange={(event) => { setPassword(event.target.value) }}
           />
         </div>
+        <button type="submit" className="mt-6 rounded-lg p-4 w-full flex items-center justify-center gap-3 font-semibold bg-violet-500 hover:bg-violet-700 transition-colors focus:outline-none focus:ring-2 focus:ring-violet-600 focus:ring-offset-2 focus:ring-offset-zinc-900">
+          {buttonText}
+        </button>
+        <span className="inline-block mt-4">
+          {footerText.split('?')[0] + '?'}
+          <Link to={redirectUrl} className="hover:text-violet-300 transition-colors">
+            {footerText.split('?')[1]}
+          </Link>
+        </span>
       </form >
     </div >
   )
