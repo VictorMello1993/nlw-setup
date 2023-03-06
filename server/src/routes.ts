@@ -2,10 +2,10 @@ import { FastifyInstance } from "fastify";
 import { prisma } from "./lib/prisma";
 import { z } from "zod"
 import dayjs from "dayjs";
-import { createHash } from 'node:crypto'
 import { getHashedPassword } from "./utils/get-hashed-password";
-import { comparePasswords } from "./utils/compare-passwords";
 import { sign } from "jsonwebtoken";
+import { getSalt } from "./utils/get-salt";
+import { getComparedPassword } from "./utils/compare-passwords";
 
 export async function appRoutes(app: FastifyInstance) {
   const STRONG_PASSWORD_PATTERN = new RegExp(process.env.STRONG_PASSWORD_PATTERN as string)
@@ -16,6 +16,8 @@ export async function appRoutes(app: FastifyInstance) {
   })
 
   const AUTH_MESSAGE_ERROR = 'E-mail ou senha inválido(s).'
+
+  const SALT = getSalt();
 
   app.post('/habits', async (request) => {
     const createHabitBody = z.object({
@@ -160,7 +162,7 @@ export async function appRoutes(app: FastifyInstance) {
   app.post('/users', async (request) => {
     const { email, password } = userSchema.parse(request.body);
 
-    const hashedPassword = getHashedPassword(password)
+    const hashedPassword = getHashedPassword(password, SALT)
 
     await prisma.user.create({
       data: {
@@ -183,9 +185,10 @@ export async function appRoutes(app: FastifyInstance) {
       throw new Error(AUTH_MESSAGE_ERROR)
     }
 
-    const passwordCompared = comparePasswords(user.password, password)
+    const comparePasswords = getComparedPassword(SALT)
+    const passwordIsMatch = comparePasswords(user.password, password)
 
-    if (!passwordCompared) {
+    if (!passwordIsMatch) {
       throw new Error(AUTH_MESSAGE_ERROR)
     }
 
