@@ -3,8 +3,20 @@ import { prisma } from "./lib/prisma";
 import { z } from "zod"
 import dayjs from "dayjs";
 import { createHash } from 'node:crypto'
+import { getHashedPassword } from "./utils/get-hashed-password";
+import { comparePasswords } from "./utils/compare-passwords";
+import { sign } from "jsonwebtoken";
 
 export async function appRoutes(app: FastifyInstance) {
+  const STRONG_PASSWORD_PATTERN = new RegExp(process.env.STRONG_PASSWORD_PATTERN as string)
+
+  const userSchema = z.object({
+    email: z.string().email(),
+    password: z.string().regex(STRONG_PASSWORD_PATTERN, { message: 'Senha fora do padrão' })
+  })
+
+  const AUTH_MESSAGE_ERROR = 'E-mail ou senha inválido(s).'
+
   app.post('/habits', async (request) => {
     const createHabitBody = z.object({
       title: z.string(),
@@ -14,8 +26,6 @@ export async function appRoutes(app: FastifyInstance) {
     //[0, 1, 2, 3, 4, 5, 6] => Domingo, segunda, terça, quarta, quinta, sexta, sábado
 
     const { title, weekDays } = createHabitBody.parse(request.body)
-
-    console.log(title, weekDays)
 
     const today = dayjs().startOf('day').toDate()
 
@@ -148,24 +158,9 @@ export async function appRoutes(app: FastifyInstance) {
   })
 
   app.post('/users', async (request) => {
-    const createUserBody = z.object({
-      email: z.string().email(),
-      password: z.string()
-    })
+    const { email, password } = userSchema.parse(request.body);
 
-    //Implementar a lógica da força da senha
-    //Possível regex:
-    //^                               start anchor
-    /*(?=(.*[a-z]){3,})               lowercase letters. {3,} indicates that you want 3 of this group
-    (?=(.*[A-Z]){2,})               uppercase letters. {2,} indicates that you want 2 of this group
-    (?=(.*[0-9]){2,})               numbers. {2,} indicates that you want 2 of this group
-    (?=(.*[!@#$%^&*()\-__+.]){1,})  all the special characters in the [] fields. The ones used by regex are escaped by using the \ or the character itself. {1,} is redundant, but good practice, in case you change that to more than 1 in the future. Also keeps all the groups consistent
-    {8,}                            indicates that you want 8 or more
-    $ */
-
-    const { email, password } = createUserBody.parse(request.body);
-
-    const hashedPassword = createHash('sha256').update(password).digest('base64');
+    const hashedPassword = getHashedPassword(password)
 
     await prisma.user.create({
       data: {
@@ -173,5 +168,33 @@ export async function appRoutes(app: FastifyInstance) {
         password: hashedPassword
       }
     })
+  })
+
+  app.post('/users/login', async (request) => {
+    const { email, password } = userSchema.parse(request.body);
+
+    const user = await prisma.user.findUnique({
+      where: {
+        email
+      }
+    })
+
+    if (!user) {
+      throw new Error(AUTH_MESSAGE_ERROR)
+    }
+
+    const passwordCompared = comparePasswords(user.password, password)
+
+    if (!passwordCompared) {
+      throw new Error(AUTH_MESSAGE_ERROR)
+    }
+
+    const token = sign({ email }, process.env.SECRET_KEY as string, {
+      subject: user.id,
+      expiresIn: process.env.SECRET_KEY_EXPIRES_IN
+    })
+
+    return { token }
+
   })
 }
