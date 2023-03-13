@@ -8,7 +8,10 @@ interface ISignUpFormProps {
 
 export function SignUpForm({ children }: ISignUpFormProps) {
   return (
-    <AuthForm buttonText={texts.Signup} footerText={texts.alreadyHasAccount} title={texts.SignupTitle} redirectUrl={texts.SignInUrl}>
+    <AuthForm buttonText={texts.Signup}
+      footerText={texts.alreadyHasAccount}
+      title={texts.SignupTitle}
+      redirectUrl={texts.SignInUrl}>
       {children}
     </AuthForm >
   )
