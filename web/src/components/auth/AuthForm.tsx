@@ -41,10 +41,6 @@ export function AuthForm({ children, title, buttonText, footerText, redirectUrl 
     return <p>Carregando...</p>
   }
 
-  if (user) {
-    console.log(user)
-  }
-
   return (
     <div className="absolute p-10 bg-zinc-900 rounded-2xl w-full max-w-md top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
       <span className="text-3l leading-tight font-semibold">{title}</span>
