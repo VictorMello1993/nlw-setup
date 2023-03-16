@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { auth } from "../../libs/firebase";
 import { texts } from "../../utils/texts";
 import { useCreateUserWithEmailAndPassword, useSignInWithEmailAndPassword } from 'react-firebase-hooks/auth'
-import { Auth } from "firebase/auth";
+import { saveAuth } from "../../utils/storage";
 
 interface ISignupFormProps {
   children?: React.ReactNode;
@@ -15,6 +15,8 @@ interface ISignupFormProps {
 export function AuthForm({ children, title, buttonText, footerText, redirectUrl }: ISignupFormProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  const navigate = useNavigate();
 
   const [
     createUserWithEmailAndPassword,
@@ -34,7 +36,15 @@ export function AuthForm({ children, title, buttonText, footerText, redirectUrl 
 
   async function handleSignIn(event: React.SyntheticEvent) {
     event.preventDefault();
-    await signInWithEmailAndPassword(email, password);
+
+    const session = await signInWithEmailAndPassword(email, password);
+
+    if (session) {
+      const token = await session.user.getIdToken()
+      saveAuth(token)
+      navigate('/logged')
+    }
+
   }
 
   if (loading) {
