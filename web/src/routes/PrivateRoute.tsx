@@ -1,4 +1,3 @@
-import { UserCredential } from "firebase/auth"
 import { Navigate } from "react-router-dom"
 import { isAuthenticated } from "../utils/storage"
 
