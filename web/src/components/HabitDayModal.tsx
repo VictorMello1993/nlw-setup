@@ -2,7 +2,7 @@ import * as Popover from "@radix-ui/react-popover"
 import dayjs from "dayjs"
 import { X } from "phosphor-react"
 import { useEffect, useState } from "react"
-import { api } from "../libs/axios"
+import { http } from "../libs/axios"
 import { calculateCompletedPercentage } from "../utils/calculate-completed-percentage"
 import { HabitsList } from "./HabitsList"
 import { ProgressBar } from "./ProgressBar"
@@ -32,7 +32,7 @@ export function HabitDayModal({ date, handleCompletedPercentage, completedPercen
   const dayOfWeek = dayjs(date).format('dddd')
 
   useEffect(() => {
-    api.get('day', {
+    http.get('day', {
       params: {
         date: date.toISOString()
       }

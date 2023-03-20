@@ -4,6 +4,7 @@ import { auth } from "../../libs/firebase";
 import { texts } from "../../utils/texts";
 import { useCreateUserWithEmailAndPassword, useSignInWithEmailAndPassword } from 'react-firebase-hooks/auth'
 import { saveAuth } from "../../utils/storage";
+import { http } from "../../libs/axios";
 
 interface ISignupFormProps {
   children?: React.ReactNode;
@@ -16,7 +17,7 @@ export function AuthForm({ children, title, buttonText, footerText, redirectUrl 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   const [
     createUserWithEmailAndPassword,
@@ -41,10 +42,12 @@ export function AuthForm({ children, title, buttonText, footerText, redirectUrl 
 
     if (session) {
       const token = await session.user.getIdToken()
-      saveAuth(token)
+
+      http.defaults.headers['authorization'] = `Bearer ${token}`
+      http.post('/users/login', { email, password })
+
       navigate('/logged')
     }
-
   }
 
   if (loading) {

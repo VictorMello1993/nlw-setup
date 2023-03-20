@@ -1,7 +1,7 @@
 import * as Checkbox from "@radix-ui/react-checkbox";
 import dayjs from "dayjs";
 import { Check } from "phosphor-react";
-import { api } from "../libs/axios";
+import { http } from "../libs/axios";
 import { calculateCompletedPercentage } from "../utils/calculate-completed-percentage";
 import { HabitsInfo } from "./HabitDayModal";
 
@@ -14,7 +14,7 @@ interface HabitsListProps {
 
 export function HabitsList({ date, onCompletedChanged, handleCompletedPercentage, habitsInfo }: HabitsListProps) {
   async function handleToggleHabit(habitId: string) {
-    await api.patch(`/habits/${habitId}/toggle`)
+    await http.patch(`/habits/${habitId}/toggle`)
 
     const isHabitAlreadyCompleted = habitsInfo!.completedHabits.includes(habitId)
 

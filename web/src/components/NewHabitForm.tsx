@@ -1,7 +1,7 @@
 import { Check } from "phosphor-react";
 import * as Checkbox from '@radix-ui/react-checkbox';
 import { FormEvent, FormEventHandler, useState } from "react";
-import { api } from "../libs/axios";
+import { http } from "../libs/axios";
 
 const availableWeekDays = [
   'Domingo',
@@ -24,7 +24,7 @@ export function NewHabitForm() {
       return
     }
 
-    await api.post('habits', {
+    await http.post('habits', {
       title,
       weekDays
     })
