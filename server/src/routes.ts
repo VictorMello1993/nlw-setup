@@ -1,4 +1,4 @@
-import { FastifyInstance } from "fastify";
+import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { prisma } from "./lib/prisma";
 import { z } from "zod"
 import dayjs from "dayjs";
@@ -6,6 +6,7 @@ import { getHashedPassword } from "./utils/get-hashed-password";
 import { sign } from "jsonwebtoken";
 import { getSalt } from "./utils/get-salt";
 import { getComparedPassword } from "./utils/compare-passwords";
+import { randomUUID } from "node:crypto";
 
 export async function appRoutes(app: FastifyInstance) {
   const STRONG_PASSWORD_PATTERN = new RegExp(process.env.STRONG_PASSWORD_PATTERN as string)
@@ -172,32 +173,44 @@ export async function appRoutes(app: FastifyInstance) {
     })
   })
 
-  app.post('/users/login', async (request) => {
-    const { email, password } = userSchema.parse(request.body);
+  app.post('/users/login', async (request: FastifyRequest, reply: FastifyReply) => {
+    const MILLISSECONDS_IN_4_HOURS = 1000 * 60 * 60 * 4;
 
-    const user = await prisma.user.findUnique({
-      where: {
-        email
-      }
-    })
+    // const { email, password } = userSchema.parse(request.body);
 
-    if (!user) {
-      throw new Error(AUTH_MESSAGE_ERROR)
+    // const user = await prisma.user.findUnique({
+    //   where: {
+    //     email
+    //   }
+    // })
+
+    // if (!user) {
+    //   throw new Error(AUTH_MESSAGE_ERROR)
+    // }
+
+    let sessionId = request.cookies.sessionId;
+
+    if (!sessionId) {
+      sessionId = randomUUID();
+      reply.cookie('sessionId', sessionId, {
+        path: '/',
+        maxAge: MILLISSECONDS_IN_4_HOURS
+      })
     }
 
-    const comparePasswords = getComparedPassword(SALT)
-    const passwordIsMatch = comparePasswords(user.password, password)
+    //UTILIZANDO MÉTODO TRADICIONAL (FORA DO FIREBASE)
+    // const comparePasswords = getComparedPassword(SALT)
+    // const passwordIsMatch = comparePasswords(user.password, password)
 
-    if (!passwordIsMatch) {
-      throw new Error(AUTH_MESSAGE_ERROR)
-    }
+    // if (!passwordIsMatch) {
+    //   throw new Error(AUTH_MESSAGE_ERROR)
+    // }
 
-    const token = sign({ email }, process.env.SECRET_KEY as string, {
-      subject: user.id,
-      expiresIn: process.env.SECRET_KEY_EXPIRES_IN
-    })
+    // const token = sign({ email }, process.env.SECRET_KEY as string, {
+    //   subject: user.id,
+    //   expiresIn: process.env.SECRET_KEY_EXPIRES_IN
+    // })
 
-    return { token }
-
+    return reply.status(201).send({ message: 'Login efetuado com sucesso' });
   })
 }
