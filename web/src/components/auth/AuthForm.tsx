@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { auth } from "../../libs/firebase";
 import { texts } from "../../utils/texts";
 import { useCreateUserWithEmailAndPassword, useSignInWithEmailAndPassword } from 'react-firebase-hooks/auth'
-import { saveAuth } from "../../utils/storage";
 import { http } from "../../libs/axios";
 
 interface ISignupFormProps {
@@ -44,7 +43,7 @@ export function AuthForm({ children, title, buttonText, footerText, redirectUrl 
       const token = await session.user.getIdToken()
 
       http.defaults.headers['authorization'] = `Bearer ${token}`
-      http.post('/users/login', { email, password })
+      http.post('/users/login', { email, password }, { withCredentials: true })
 
       navigate('/logged')
     }

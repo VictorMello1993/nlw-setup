@@ -7,6 +7,7 @@ interface PrivateRouteProps {
 
 export function PrivateRoute({ children }: PrivateRouteProps) {
   return <>
-    {isAuthenticated() ? children : <Navigate to="/signin" />}
+    {children}
+    {/* {isAuthenticated() ? children : <Navigate to="/signin" />} */}
   </>
 }
