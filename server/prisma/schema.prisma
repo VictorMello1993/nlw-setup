@@ -55,9 +55,10 @@ model DayHabit {
 }
 
 model User {
-  id       String @id @default(uuid())
-  email    String @unique
-  password String
+  id        String  @id @default(uuid())
+  email     String  @unique
+  password  String
+  sessionId String?
 
   @@map("users")
 }

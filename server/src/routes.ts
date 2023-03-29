@@ -3,22 +3,23 @@ import { prisma } from "./lib/prisma";
 import { z } from "zod"
 import dayjs from "dayjs";
 import { getHashedPassword } from "./utils/get-hashed-password";
-import { sign } from "jsonwebtoken";
 import { getSalt } from "./utils/get-salt";
-import { getComparedPassword } from "./utils/compare-passwords";
 import { randomUUID } from "node:crypto";
 
 export async function appRoutes(app: FastifyInstance) {
-  const STRONG_PASSWORD_PATTERN = new RegExp(process.env.STRONG_PASSWORD_PATTERN as string)
+  const STRONG_PASSWORD_PATTERN = new RegExp(process.env.STRONG_PASSWORD_PATTERN2 as string)
+  const AUTH_MESSAGE_ERROR = 'E-mail ou senha inválido(s).'
+  const SALT = getSalt();
 
   const userSchema = z.object({
     email: z.string().email(),
     password: z.string().regex(STRONG_PASSWORD_PATTERN, { message: 'Senha fora do padrão' })
   })
 
-  const AUTH_MESSAGE_ERROR = 'E-mail ou senha inválido(s).'
-
-  const SALT = getSalt();
+  const userLoginSchema = userSchema.transform(async (user) => ({
+    ...user,
+    password: getHashedPassword(user.password, SALT)
+  }))
 
   app.post('/habits', async (request) => {
     const createHabitBody = z.object({
@@ -160,15 +161,13 @@ export async function appRoutes(app: FastifyInstance) {
     return summary
   })
 
-  app.post('/users', async (request) => {
+  app.post('/users', async (request: FastifyRequest) => {
     const { email, password } = userSchema.parse(request.body);
-
-    const hashedPassword = getHashedPassword(password, SALT)
 
     await prisma.user.create({
       data: {
         email,
-        password: hashedPassword
+        password
       }
     })
   })
@@ -176,19 +175,9 @@ export async function appRoutes(app: FastifyInstance) {
   app.post('/users/login', async (request: FastifyRequest, reply: FastifyReply) => {
     const MILLISSECONDS_IN_4_HOURS = 1000 * 60 * 60 * 4;
 
-    // const { email, password } = userSchema.parse(request.body);
+    const { email, password } = await userLoginSchema.parseAsync(request.body);
 
-    // const user = await prisma.user.findUnique({
-    //   where: {
-    //     email
-    //   }
-    // })
-
-    // if (!user) {
-    //   throw new Error(AUTH_MESSAGE_ERROR)
-    // }
-
-    let sessionId = request.cookies.sessionId;
+    let sessionId = request.cookies.sessionId as string;
 
     if (!sessionId) {
       sessionId = randomUUID();
@@ -198,19 +187,35 @@ export async function appRoutes(app: FastifyInstance) {
       })
     }
 
-    //UTILIZANDO MÉTODO TRADICIONAL (FORA DO FIREBASE)
-    // const comparePasswords = getComparedPassword(SALT)
-    // const passwordIsMatch = comparePasswords(user.password, password)
+    const user = await prisma.user.findUnique({
+      where: {
+        email
+      }
+    })
 
-    // if (!passwordIsMatch) {
-    //   throw new Error(AUTH_MESSAGE_ERROR)
-    // }
+    if (!user) {
+      await prisma.user.create({
+        data: {
+          email,
+          password,
+          sessionId
+        }
+      })
+    }
+    else {
+      await prisma.user.update({
+        data: {
+          sessionId
+        },
+        where: {
+          email
+        }
+      })
+    }
 
-    // const token = sign({ email }, process.env.SECRET_KEY as string, {
-    //   subject: user.id,
-    //   expiresIn: process.env.SECRET_KEY_EXPIRES_IN
-    // })
-
-    return reply.status(201).send({ message: 'Login efetuado com sucesso' });
+    return reply.status(201)
+      .header("Access-Control-Allow-Credentials", "true")
+      .header("Access-Control-Allow-Origin", process.env.ORIGIN)
+      .send({ message: 'Login efetuado com sucesso' });
   })
 }
