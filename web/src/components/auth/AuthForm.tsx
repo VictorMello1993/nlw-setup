@@ -4,9 +4,12 @@ import { auth } from "../../libs/firebase";
 import { texts } from "../../utils/texts";
 import { useCreateUserWithEmailAndPassword, useSignInWithEmailAndPassword } from 'react-firebase-hooks/auth'
 import { http } from "../../libs/axios";
+import { useZorm } from "react-zorm";
+import { AuthSignupFormSchemaValidation } from "../../utils/authSignupFormSchemaValidation";
+import { ErrorMessage } from "./ErrorMessage";
 
 interface ISignupFormProps {
-  children?: React.ReactNode;
+  children?: React.ReactNode
   title: string;
   buttonText: string;
   footerText: string;
@@ -15,6 +18,13 @@ interface ISignupFormProps {
 export function AuthForm({ children, title, buttonText, footerText, redirectUrl }: ISignupFormProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  const zo = useZorm("auth", AuthSignupFormSchemaValidation, {
+    onValidSubmit(event) {
+      event.preventDefault();
+      alert('Form ok')
+    }
+  })
 
   const navigate = useNavigate()
 
@@ -31,6 +41,7 @@ export function AuthForm({ children, title, buttonText, footerText, redirectUrl 
 
   async function handleSignOut(event: React.SyntheticEvent) {
     event.preventDefault();
+
     await createUserWithEmailAndPassword(email, password)
   }
 
@@ -43,7 +54,8 @@ export function AuthForm({ children, title, buttonText, footerText, redirectUrl 
       const token = await session.user.getIdToken()
 
       http.defaults.headers['authorization'] = `Bearer ${token}`
-      http.post('/users/login', { email, password }, { withCredentials: true })
+
+      await http.post('/users/login', { email, password }, { withCredentials: true })
 
       navigate('/logged')
     }
@@ -66,6 +78,9 @@ export function AuthForm({ children, title, buttonText, footerText, redirectUrl 
             className="p-2 rounded-lg my-3 mx-3 basis-4/5 bg-zinc-800 text-white placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-violet-700 focus:ring-offset-2 focus:ring-offset-zinc-900"
             onChange={(event) => { setEmail(event.target.value) }}
           />
+          {zo.errors.email(error => {
+            <ErrorMessage message={error.message} />
+          })}
         </div>
         <div className="flex items-center">
           <label htmlFor="password" className="font-semibold leading-tight basis-1/5">Senha</label>
@@ -75,7 +90,11 @@ export function AuthForm({ children, title, buttonText, footerText, redirectUrl 
             placeholder="*************"
             className="p-2 rounded-lg my-3 mx-3 basis-4/5 bg-zinc-800 text-white placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-violet-700 focus:ring-offset-2 focus:ring-offset-zinc-900"
             onChange={(event) => { setPassword(event.target.value) }}
+            pattern={import.meta.env.VITE_STRONG_PASSWORD_PATTERN}
           />
+          {zo.errors.password(error => {
+            <ErrorMessage message={error.message} />
+          })}
         </div>
         <button type="submit"
           className="mt-6 rounded-lg p-4 w-full flex items-center justify-center gap-3 font-semibold bg-violet-500 hover:bg-violet-700 transition-colors focus:outline-none focus:ring-2 focus:ring-violet-600 focus:ring-offset-2 focus:ring-offset-zinc-900"
@@ -90,5 +109,6 @@ export function AuthForm({ children, title, buttonText, footerText, redirectUrl 
         </span>
       </form >
     </div >
+
   )
 }

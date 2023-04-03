@@ -12,7 +12,7 @@ export function SignUpForm({ children }: ISignUpFormProps) {
       footerText={texts.alreadyHasAccount}
       title={texts.SignupTitle}
       redirectUrl={texts.SignInUrl}>
-      {children}
+      <div>{children}</div>
     </AuthForm >
   )
 }
