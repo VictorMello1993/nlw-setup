@@ -1,9 +1,26 @@
-import { FastifyInstance } from "fastify";
+import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { prisma } from "./lib/prisma";
 import { z } from "zod"
 import dayjs from "dayjs";
+import { getHashedPassword } from "./utils/get-hashed-password";
+import { getSalt } from "./utils/get-salt";
+import { randomUUID } from "node:crypto";
 
 export async function appRoutes(app: FastifyInstance) {
+  const STRONG_PASSWORD_PATTERN = new RegExp(process.env.STRONG_PASSWORD_PATTERN2 as string)
+  const AUTH_MESSAGE_ERROR = 'E-mail ou senha inválido(s).'
+  const SALT = getSalt();
+
+  const userSchema = z.object({
+    email: z.string().email(),
+    password: z.string().regex(STRONG_PASSWORD_PATTERN, { message: 'Senha fora do padrão' })
+  })
+
+  const userLoginSchema = userSchema.transform(async (user) => ({
+    ...user,
+    password: getHashedPassword(user.password, SALT)
+  }))
+
   app.post('/habits', async (request) => {
     const createHabitBody = z.object({
       title: z.string(),
@@ -63,7 +80,7 @@ export async function appRoutes(app: FastifyInstance) {
       }
     })
 
-    const completedHabits = day?.dayHabits.map(dayHabit => dayHabit.habit_id)
+    const completedHabits = day?.dayHabits.map(dayHabit => dayHabit.habit_id) ?? []
 
     return {
       possibleHabits,
@@ -127,26 +144,78 @@ export async function appRoutes(app: FastifyInstance) {
     // [{date: 17/01, available_habits: 5, completed_habits: 1}, {date: 18/01, available_habits: 2, completed_habits: 2}, {}]
 
     const summary = await prisma.$queryRaw`
-      SELECT 
-        d.id, 
-        d.date,
-        (
-          SELECT 
-            cast(count(*) as float)
-          FROM day_habits dh
-          where dh.day_id = d.id
-        ) as completed_habits,
-        (
-          SELECT
-            cast(count(*) as float)
-          FROM habit_week_days hwd
-          JOIN habits h
-            ON h.id = hwd.habit_id
-          WHERE hwd.week_day = cast(strftime('%w', d.date / 1000.0, 'unixepoch') as int)  
-            AND h.created_at <= d.date
-        ) as available_habits
-      FROM days d`
+      SELECT d.id,
+             d.date,
+            (
+              SELECT cast(count(*) as float) FROM day_habits dh
+              where dh.day_id = d.id
+            ) as completed_habits,
+            (
+              SELECT cast(count(*) as float)
+              FROM habit_week_days hwd
+                JOIN habits h ON h.id = hwd.habit_id
+                WHERE hwd.week_day = cast(extract(dow from d.date) as integer)
+                AND h.created_at <= d.date
+            ) as available_habits FROM days d`
 
     return summary
+  })
+
+  app.post('/users', async (request: FastifyRequest) => {
+    const { email, password } = userSchema.parse(request.body);
+
+    await prisma.user.create({
+      data: {
+        email,
+        password
+      }
+    })
+  })
+
+  app.post('/users/login', async (request: FastifyRequest, reply: FastifyReply) => {
+    const MILLISSECONDS_IN_4_HOURS = 1000 * 60 * 60 * 4;
+
+    const { email, password } = await userLoginSchema.parseAsync(request.body);
+
+    let sessionId = request.cookies.sessionId as string;
+
+    if (!sessionId) {
+      sessionId = randomUUID();
+      reply.cookie('sessionId', sessionId, {
+        path: '/',
+        maxAge: MILLISSECONDS_IN_4_HOURS
+      })
+    }
+
+    const user = await prisma.user.findUnique({
+      where: {
+        email
+      }
+    })
+
+    if (!user) {
+      await prisma.user.create({
+        data: {
+          email,
+          password,
+          sessionId
+        }
+      })
+    }
+    else {
+      await prisma.user.update({
+        data: {
+          sessionId
+        },
+        where: {
+          email
+        }
+      })
+    }
+
+    return reply.status(201)
+      .header("Access-Control-Allow-Credentials", "true")
+      .header("Access-Control-Allow-Origin", process.env.ORIGIN)
+      .send({ message: 'Login efetuado com sucesso' });
   })
 }
