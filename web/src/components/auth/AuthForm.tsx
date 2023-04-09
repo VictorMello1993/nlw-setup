@@ -79,7 +79,7 @@ export function AuthForm({ children, title, buttonText, footerText, redirectUrl 
             onChange={(event) => { setEmail(event.target.value) }}
           />
           {zo.errors.email(error => {
-            <ErrorMessage message={error.message} />
+            return <ErrorMessage message={error.message} />
           })}
         </div>
         <div className="flex items-center">
@@ -93,7 +93,7 @@ export function AuthForm({ children, title, buttonText, footerText, redirectUrl 
             pattern={import.meta.env.VITE_STRONG_PASSWORD_PATTERN}
           />
           {zo.errors.password(error => {
-            <ErrorMessage message={error.message} />
+            return <ErrorMessage message={error.message} />
           })}
         </div>
         <button type="submit"
