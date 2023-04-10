@@ -6,5 +6,9 @@ export const texts = {
   SignupUrl: '/signup',
   SignInUrl: '/signin',
   SignupTitle: 'Por favor, digite suas informações de cadastro',
-  SigninTitle: 'Por favor, digite suas informações de login'
+  SigninTitle: 'Por favor, digite suas informações de login',
+  SubmitSuccess: 'Conta criada com sucesso',
+  SubmitFailure: 'Houve erro ao criar conta',
+  LoginSuccess: 'Login realizado com sucesso',
+  LoginFailure: 'Houve erro ao realizar login'
 }
