@@ -97,13 +97,13 @@ export function AuthForm({ children, title, buttonText, footerText, redirectUrl,
           <ErrorMessage message={error.message} />
         ))}
         <button type="submit"
-          className="mt-6 rounded-lg p-4 w-full flex items-center justify-center gap-3 font-semibold bg-violet-500 hover:bg-violet-700 transition-colors focus:outline-none focus:ring-2 focus:ring-violet-600 focus:ring-offset-2 focus:ring-offset-zinc-900"
+          className={`mt-6 rounded-lg p-4 w-full flex items-center justify-center gap-3 font-semibold bg-violet-500 hover:bg-violet-700 transition-colors focus:outline-none focus:ring-2 focus:ring-violet-600 focus:ring-offset-2 focus:ring-offset-zinc-900 ${disabled ? 'bg-zinc-400 hover:bg-zinc-400' : ''}`}
           disabled={disabled}>
           {buttonText}
         </button>
         <span className="inline-block mt-4">
           {footerText.split('?')[0] + '?'}
-          <Link to={redirectUrl} className="hover:text-violet-300 transition-colors">
+          <Link to={redirectUrl} className="underline decoration-1 underline-offset-2 hover:text-violet-400 transition-colors focus:outline-none focus:ring-2 focus:ring-violet-600 focus:ring-offset-4 focus:ring-offset-zinc-900">
             {footerText.split('?')[1]}
           </Link>
         </span>
