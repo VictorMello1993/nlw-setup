@@ -7,6 +7,7 @@ import { AuthSignupFormSchemaValidation } from "../../utils/authSignupFormSchema
 import { useZorm } from "react-zorm";
 import { ErrorMessage } from "./ErrorMessage";
 import { ZodError } from "zod";
+import { StrongPasswordRequirements } from "./StrongPasswordRequirements";
 
 interface ISignupFormProps {
   children?: React.ReactNode;
@@ -73,10 +74,6 @@ export function AuthForm({ children, title, buttonText, footerText, redirectUrl,
     return <p>Carregando...</p>
   }
 
-  const errorMessages = validation?.success === false ? JSON.parse(JSON.stringify(validation)).error as ZodError : null;
-
-  console.log(errorMessages?.issues.filter(issue => issue.code === 'invalid_string' && issue.validation === 'regex'))
-
   return (
     <div className="absolute p-10 bg-zinc-900 rounded-2xl w-full max-w-md top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
       <span className="text-3l leading-tight font-semibold">{title}</span>
@@ -110,12 +107,7 @@ export function AuthForm({ children, title, buttonText, footerText, redirectUrl,
           <ErrorMessage message={error.message} />
         ))}
         {currentUrl.includes('signup') ?
-          <ul>
-            <li className={`${formData.password.length >= 6 ? 'text-green-400 text-xs' : 'text-red-500 text-xs'}`}>6 caracteres</li>
-            <li className={`${new RegExp(import.meta.env.VITE_STRONG_PASSWORD_PATTERN_UPPERCASE as string).test(formData.password) ? 'text-green-400 text-xs' : 'text-red-500 text-xs'}`}>Pelo menos uma letra maiúscula</li>
-            <li className={`${new RegExp(import.meta.env.VITE_STRONG_PASSWORD_PATTERN_NUMBER_REQUIRED as string).test(formData.password) ? 'text-green-400 text-xs' : 'text-red-500 text-xs'}`}>Pelo menos um número</li>
-            <li className={`${new RegExp(import.meta.env.VITE_STRONG_PASSWORD_PATTERN_SPECIAL_CHARACTER as string).test(formData.password) ? 'text-green-400 text-xs' : 'text-red-500 text-xs'}`}>Pelo menos um caracter especial</li>
-          </ul> : ''}
+          <StrongPasswordRequirements value={formData.password} /> : ''}
         <button type="submit"
           className={`mt-6 rounded-lg p-4 w-full flex items-center justify-center gap-3 font-semibold bg-violet-500 hover:bg-violet-700 transition-colors focus:outline-none focus:ring-2 focus:ring-violet-600 focus:ring-offset-2 focus:ring-offset-zinc-900 ${disabled ? 'bg-zinc-400 hover:bg-zinc-400' : ''}`}
           disabled={disabled}>
