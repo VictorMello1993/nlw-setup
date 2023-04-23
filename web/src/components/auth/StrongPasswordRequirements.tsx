@@ -15,7 +15,7 @@ export function StrongPasswordRequirements({ value }: StrongPasswordRequirements
     <div className="my-4 text-xs">
       A senha deve conter:
       <ul className="my-1">
-        <li className={`${PASSWORD_LENGTH ? REQUIREMENT_MATCHED : REQUIREMENT_REJECTED}`}>6 caracteres</li>
+        <li className={`${PASSWORD_LENGTH ? REQUIREMENT_MATCHED : REQUIREMENT_REJECTED}`}>Pelo menos 6 caracteres</li>
         <li className={`${PASSWORD_HAS_UPPERCASES ? REQUIREMENT_MATCHED : REQUIREMENT_REJECTED}`}>Pelo menos uma letra maiúscula</li>
         <li className={`${PASSWORD_HAS_NUMBERS ? REQUIREMENT_MATCHED : REQUIREMENT_REJECTED}`}>Pelo menos um número</li>
         <li className={`${PASSWORD_HAS_SPECIAL_CHARACTERS ? REQUIREMENT_MATCHED : REQUIREMENT_REJECTED}`}>Pelo menos um caracter especial</li>
