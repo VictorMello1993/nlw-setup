@@ -1,4 +1,4 @@
-import React from "react";
+import React, { FormEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { auth } from "../../libs/firebase";
 import { useCreateUserWithEmailAndPassword, useSignInWithEmailAndPassword } from 'react-firebase-hooks/auth'
@@ -6,6 +6,7 @@ import { http } from "../../libs/axios";
 import { AuthSignupFormSchemaValidation } from "../../utils/authSignupFormSchemaValidation";
 import { useZorm } from "react-zorm";
 import { ErrorMessage } from "./ErrorMessage";
+import { ZodError } from "zod";
 
 interface ISignupFormProps {
   children?: React.ReactNode;
@@ -15,8 +16,12 @@ interface ISignupFormProps {
   redirectUrl: string;
   currentUrl: string
 }
+
 export function AuthForm({ children, title, buttonText, footerText, redirectUrl, currentUrl }: ISignupFormProps) {
+  const [formData, setFormData] = useState({ email: '', password: '' })
+
   const { ref, fields, errors, validation, validate } = useZorm("auth", AuthSignupFormSchemaValidation, {
+
     onValidSubmit: async (event) => {
       event.preventDefault()
 
@@ -29,7 +34,7 @@ export function AuthForm({ children, title, buttonText, footerText, redirectUrl,
       if (currentUrl.includes('signin')) {
         await handleSignIn(email, password);
       }
-    }
+    },
   })
 
   const navigate = useNavigate()
@@ -68,15 +73,21 @@ export function AuthForm({ children, title, buttonText, footerText, redirectUrl,
     return <p>Carregando...</p>
   }
 
+  const errorMessages = validation?.success === false ? JSON.parse(JSON.stringify(validation)).error as ZodError : null;
+
+  console.log(errorMessages?.issues.filter(issue => issue.code === 'invalid_string' && issue.validation === 'regex'))
+
   return (
     <div className="absolute p-10 bg-zinc-900 rounded-2xl w-full max-w-md top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
       <span className="text-3l leading-tight font-semibold">{title}</span>
       <form className="w-full flex-col mt-6" ref={ref}>
         <div className="flex items-center">
-          <label htmlFor="email" className="font-semibold leading-tight basis-1/5">E-mail</label>
+          <label htmlFor={fields.email()} className="font-semibold leading-tight basis-1/5">E-mail</label>
           <input type="email"
             name={fields.email()}
-            id="email"
+            id={fields.email()}
+            value={formData.email}
+            onChange={event => setFormData({ ...formData, email: event.target.value })}
             placeholder="usuario@gmail.com"
             className={`p-2 rounded-lg my-3 mx-3 basis-4/5 bg-zinc-800 text-white placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-violet-700 focus:ring-offset-2 focus:ring-offset-zinc-900 ${errors.password() ? 'ring-1 ring-red-500' : ''}`}
           />
@@ -85,17 +96,26 @@ export function AuthForm({ children, title, buttonText, footerText, redirectUrl,
           <ErrorMessage message={error.message} />
         ))}
         <div className="flex items-center">
-          <label htmlFor="password" className="font-semibold leading-tight basis-1/5">Senha</label>
+          <label htmlFor={fields.password()} className="font-semibold leading-tight basis-1/5">Senha</label>
           <input type="password"
             name={fields.password()}
-            id="password"
+            id={fields.password()}
+            value={formData.password}
             placeholder="*************"
             className={`p-2 rounded-lg my-3 mx-3 basis-4/5 bg-zinc-800 text-white placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-violet-700 focus:ring-offset-2 focus:ring-offset-zinc-900 ${errors.password() ? 'ring-1 ring-red-500' : ''}`}
+            onChange={event => setFormData({ ...formData, password: event.target.value })}
           />
         </div>
         {errors.password(error => (
           <ErrorMessage message={error.message} />
         ))}
+        {currentUrl.includes('signup') ?
+          <ul>
+            <li className={`${formData.password.length >= 6 ? 'text-green-400 text-xs' : 'text-red-500 text-xs'}`}>6 caracteres</li>
+            <li className={`${new RegExp(import.meta.env.VITE_STRONG_PASSWORD_PATTERN_UPPERCASE as string).test(formData.password) ? 'text-green-400 text-xs' : 'text-red-500 text-xs'}`}>Pelo menos uma letra maiúscula</li>
+            <li className={`${new RegExp(import.meta.env.VITE_STRONG_PASSWORD_PATTERN_NUMBER_REQUIRED as string).test(formData.password) ? 'text-green-400 text-xs' : 'text-red-500 text-xs'}`}>Pelo menos um número</li>
+            <li className={`${new RegExp(import.meta.env.VITE_STRONG_PASSWORD_PATTERN_SPECIAL_CHARACTER as string).test(formData.password) ? 'text-green-400 text-xs' : 'text-red-500 text-xs'}`}>Pelo menos um caracter especial</li>
+          </ul> : ''}
         <button type="submit"
           className={`mt-6 rounded-lg p-4 w-full flex items-center justify-center gap-3 font-semibold bg-violet-500 hover:bg-violet-700 transition-colors focus:outline-none focus:ring-2 focus:ring-violet-600 focus:ring-offset-2 focus:ring-offset-zinc-900 ${disabled ? 'bg-zinc-400 hover:bg-zinc-400' : ''}`}
           disabled={disabled}>
