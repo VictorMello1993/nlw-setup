@@ -16,13 +16,9 @@ interface ISignupFormProps {
   redirectUrl: string;
   currentUrl: string
 }
-
 export function AuthForm({ children, title, buttonText, footerText, redirectUrl, currentUrl }: ISignupFormProps) {
   const [formData, setFormData] = useState({ email: '', password: '' })
-  const [passwordFocused, setPasswordFocus] = useState(false)
-
   const { ref, fields, errors, validation, validate } = useZorm("auth", AuthSignupFormSchemaValidation, {
-
     onValidSubmit: async (event) => {
       event.preventDefault()
 
@@ -35,7 +31,7 @@ export function AuthForm({ children, title, buttonText, footerText, redirectUrl,
       if (currentUrl.includes('signin')) {
         await handleSignIn(email, password);
       }
-    },
+    }
   })
 
   const navigate = useNavigate()
@@ -79,7 +75,7 @@ export function AuthForm({ children, title, buttonText, footerText, redirectUrl,
       <span className="text-3l leading-tight font-semibold">{title}</span>
       <form className="w-full flex-col mt-6" ref={ref}>
         <div className="flex items-center">
-          <label htmlFor={fields.email()} className="font-semibold leading-tight basis-1/5">E-mail</label>
+          <label htmlFor="email" className="font-semibold leading-tight basis-1/5">E-mail</label>
           <input type="email"
             name={fields.email()}
             id={fields.email()}
@@ -93,23 +89,19 @@ export function AuthForm({ children, title, buttonText, footerText, redirectUrl,
           <ErrorMessage message={error.message} />
         ))}
         <div className="flex items-center">
-          <label htmlFor={fields.password()} className="font-semibold leading-tight basis-1/5">Senha</label>
+          <label htmlFor="password" className="font-semibold leading-tight basis-1/5">Senha</label>
           <input type="password"
             name={fields.password()}
             id={fields.password()}
-            value={formData.password}
+            onChange={event => setFormData({ ...formData, password: event.target.value })}
             placeholder="*************"
             className={`p-2 rounded-lg my-3 mx-3 basis-4/5 bg-zinc-800 text-white placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-violet-700 focus:ring-offset-2 focus:ring-offset-zinc-900 ${errors.password() ? 'ring-1 ring-red-500' : ''}`}
-            onChange={event => setFormData({ ...formData, password: event.target.value })}
-            onFocus={event => setPasswordFocus(true)}
-            onBlur={event => setPasswordFocus(false)}
           />
         </div>
         {errors.password(error => (
           <ErrorMessage message={error.message} />
         ))}
-        {passwordFocused && currentUrl.includes('signup') &&
-          <StrongPasswordRequirements value={formData.password} />}
+        {currentUrl.includes('signup') && <StrongPasswordRequirements value={formData.password} />}
         <button type="submit"
           className={`mt-6 rounded-lg p-4 w-full flex items-center justify-center gap-3 font-semibold bg-violet-500 hover:bg-violet-700 transition-colors focus:outline-none focus:ring-2 focus:ring-violet-600 focus:ring-offset-2 focus:ring-offset-zinc-900 ${disabled ? 'bg-zinc-400 hover:bg-zinc-400' : ''}`}
           disabled={disabled}>
