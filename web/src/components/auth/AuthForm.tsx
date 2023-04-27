@@ -7,17 +7,18 @@ import { AuthSignupFormSchemaValidation } from "../../utils/authSignupFormSchema
 import { useZorm } from "react-zorm";
 import { ErrorMessage } from "./ErrorMessage";
 import { StrongPasswordRequirements } from "./StrongPasswordRequirements";
+import { texts } from "../../utils/texts";
+import { getCurrentUrl } from "../../utils/get-current-url";
 
 interface ISignupFormProps {
   children?: React.ReactNode;
-  title: string;
-  buttonText: string;
-  footerText: string;
-  redirectUrl: string;
-  currentUrl: string
 }
-export function AuthForm({ children, title, buttonText, footerText, redirectUrl, currentUrl }: ISignupFormProps) {
+
+export function AuthForm({ children }: ISignupFormProps) {
   const [formData, setFormData] = useState({ email: '', password: '' })
+
+  const currentUrl = getCurrentUrl();
+
   const { ref, fields, errors, validation, validate } = useZorm("auth", AuthSignupFormSchemaValidation, {
     onValidSubmit: async (event) => {
       event.preventDefault()
@@ -51,6 +52,11 @@ export function AuthForm({ children, title, buttonText, footerText, redirectUrl,
 
   async function handleSignUp(email: string, password: string) {
     await createUserWithEmailAndPassword(email, password)
+
+    // if (error?.message === 'auth/email-already-in-use') {
+    //   alert('Já existe cadastro com este e-mail')
+    // }
+
   }
 
   async function handleSignIn(email: string, password: string) {
@@ -72,7 +78,7 @@ export function AuthForm({ children, title, buttonText, footerText, redirectUrl,
 
   return (
     <div className="absolute p-10 bg-zinc-900 rounded-2xl w-full max-w-md top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-      <span className="text-3l leading-tight font-semibold">{title}</span>
+      <span className="text-3l leading-tight font-semibold">{currentUrl.includes('signup') ? texts.SignupTitle : texts.SigninTitle}</span>
       <form className="w-full flex-col mt-6" ref={ref}>
         <div className="flex items-center">
           <label htmlFor="email" className="font-semibold leading-tight basis-1/5">E-mail</label>
@@ -105,12 +111,12 @@ export function AuthForm({ children, title, buttonText, footerText, redirectUrl,
         <button type="submit"
           className={`mt-6 rounded-lg p-4 w-full flex items-center justify-center gap-3 font-semibold bg-violet-500 hover:bg-violet-700 transition-colors focus:outline-none focus:ring-2 focus:ring-violet-600 focus:ring-offset-2 focus:ring-offset-zinc-900 ${disabled ? 'bg-zinc-400 hover:bg-zinc-400' : ''}`}
           disabled={disabled}>
-          {buttonText}
+          {currentUrl.includes('signup') ? texts.Signup : texts.Signin}
         </button>
         <span className="inline-block mt-4">
-          {footerText.split('?')[0] + '?'}
-          <Link to={redirectUrl} className="underline decoration-1 underline-offset-2 hover:text-violet-400 transition-colors focus:outline-none focus:ring-2 focus:ring-violet-600 focus:ring-offset-4 focus:ring-offset-zinc-900">
-            {footerText.split('?')[1]}
+          {currentUrl.includes('signup') ? texts.alreadyHasAccount.split('?')[0] + '?' : texts.NoAccount.split('?')[0] + '?'}
+          <Link to={currentUrl.includes('signup') ? texts.SignInUrl : texts.SignupUrl} className="underline decoration-1 underline-offset-2 hover:text-violet-400 transition-colors focus:outline-none focus:ring-2 focus:ring-violet-600 focus:ring-offset-4 focus:ring-offset-zinc-900">
+            {currentUrl.includes('signup') ? texts.alreadyHasAccount.split('?')[1] : texts.NoAccount.split('?')[1]}
           </Link>
         </span>
       </form >
